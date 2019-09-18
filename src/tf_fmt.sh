@@ -13,6 +13,7 @@ function terraformFmt {
 
   # Exit if not a pull request event or if no comment is to be posted
   if [ "${GITHUB_EVENT_NAME}" != "pull_request" ] || [ ${tfPostComment} -eq 0 ]; then
+    echo "Terraform Format failed."
     exit ${fmtExitCode}
   else
     if [ "${fmtExitCode}" -eq 2 ]; then
@@ -21,7 +22,7 @@ function terraformFmt {
       fmtComment=""
       for fmtFile in ${fmtOutput}; do
         fmtFileDiff=$(terraform fmt -no-color -write=false -diff "${tfWorkingDir}/${fmtFile}" | sed -n '/@@.*/,//{/@@.*/d;p}')
-        fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${fmtFile}</code></summary>\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n</details>\n")
+        fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${fmtFile}</code></summary>\n\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n\n</details>\n\n")
       done
     fi
     echo "fmtComment: $fmtComment"
