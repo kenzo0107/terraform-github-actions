@@ -5,6 +5,15 @@ inputs:
   terraform_version:
     description: 'Terraform version to install'
     required: true
+  terraform_subcommand:
+    description: 'Terraform subcommand to execute'
+    required: true
+  terraform_working_dir:
+    description: 'Terraform working directory'
+    default: ''
+  post_comment:
+    description: 'Post a comment on a pull request'
+    default: true
 runs:
   using: 'docker'
   image: './Dockerfile'

@@ -2,63 +2,34 @@
 
 function terraformFmt {
 
-  set -e
-  if [ "${tfWorkingDir}" == "" ] || [ "${tfWorkingDir}" == "" ]; then
-    cd ${GITHUB_WORKSPACE}
+  fmtOutput=$(terraform fmt -no-color -check -list -recursive ${tfWorkingDir})
+  fmtExitCode=${?}
+  echo ${fmtOutput}
+
+  # All files are formatted correctly
+  if [ "${fmtExitCode}" -eq 0 ]; then
+    exit ${fmtExitCode} 
+  fi
+
+  # Exit if not a pull request event or if no comment is to be posted
+  if [ "${GITHUB_EVENT_NAME}" != "pull_request" ] || [ ${tfPostComment} -eq 0 ]; then
+    exit ${fmtExitCode}
   else
-    cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
-  fi
-
-  set +e
-  # OUTPUT=$(sh -c "terraform fmt -no-color -check -list -recursive $*" 2>&1)
-  OUTPUT=$(terraform fmt -no-color -check -list -recursive)
-  SUCCESS=${?}
-  echo "${OUTPUT}"
-  set -e
-
-  if [ "${SUCCESS}" -eq 0 ]; then
-      exit 0
-  fi
-
-  if [ "$TF_ACTION_COMMENT" = "1" ] || [ "$TF_ACTION_COMMENT" = "false" ]; then
-      exit $SUCCESS
-  fi
-
-  if [ "${SUCCESS}" -eq 2 ]; then
-    # If it exits with 2, then there was a parse error and the command won't have
-    # printed out the files that have failed. In this case we comment back with the
-    # whole parse error.
-    COMMENT="\`\`\`
-${OUTPUT}
-\`\`\`
-"
-  else
-    # Otherwise the output will contain a list of unformatted filenames.
-    # Iterate through each file and build up a comment containing the diff
-    # of each file.
-    COMMENT=""
-    for file in ${OUTPUT}; do
-      FILE_DIFF=$(terraform fmt -no-color -write=false -diff "${file}" | sed -n '/@@.*/,//{/@@.*/d;p}')
-      COMMENT="${COMMENT}
-<details><summary><code>${file}</code></summary>
-
-\`\`\`diff
-${FILE_DIFF}
-\`\`\`
-</details>
-"
-    done
-  fi
-
-  if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
-    COMMENT_WRAPPER="#### \`terraform fmt\` Failed
-${COMMENT}
-*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`*
-"
-    PAYLOAD=$(echo '{}' | jq --arg body "${COMMENT_WRAPPER}" '.body = $body')
-    COMMENTS_URL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
-    curl -s -S --header "Authorization: token ${GITHUB_TOKEN}" --header "Content-Type: application/json" --data "${PAYLOAD}" "${COMMENTS_URL}" > /dev/null
-    
-    exit ${SUCCESS}
+    if [ "${fmtExitCode}" -eq 2 ]; then
+      fmtComment=$(echo -e "\`\`\`\n${fmtOutput}\n\`\`\`\n")
+    else
+      fmtComment=""
+      for fmtFile in ${fmtOutput}; do
+        fmtFileDiff=$(terraform fmt -no-color -write=false -diff "${tfWorkingDir}/${fmtFile}" | sed -n '/@@.*/,//{/@@.*/d;p}')
+        fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${fmtFile}</code></summary>\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n</details>\n")
+      done
+    fi
+    echo "fmtComment: $fmtComment"
+    fmtCommentWrapper=$(echo -e "#### \`terraform fmt\` Failed\n${fmtComment}\n*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`*\n")
+    echo "fmtCommentWrapper: $fmtCommentWrapper"
+    fmtCommentPayload=$(echo '{}' | jq --arg body "${fmtCommentWrapper}" '.body = $body')
+    fmtCommentsURL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
+    curl -s -S --header "Authorization: token ${GITHUB_TOKEN}" --header "Content-Type: application/json" --data "${fmtCommentPayload}" "${fmtCommentsURL}" > /dev/null
+    exit ${fmtExitCode}
   fi
 }

@@ -22,7 +22,17 @@ function parseInputs {
   fi
  
   # Optional inputs
-  tfWorkingDir=${INPUT_TERRAFORM_WORKING_DIR}
+  if [ "${INPUT_TERRAFORM_WORKING_DIR}" == "" ] || [ "${INPUT_TERRAFORM_WORKING_DIR}" == "." ]; then
+    tfWorkingDir=${GITHUB_WORKSPACE}
+  else
+    tfWorkingDir${GITHUB_WORKSPACE}/${tfWorkingDir}
+  fi
+  
+  if [ "${INPUT_POST_COMMENT}" == "true" ] || [ "${INPUT_POST_COMMENT}" == "1" ]; then
+    tfPostComment=1
+  else
+    tfPostComment=0
+  fi
 }
 
 
@@ -40,15 +50,6 @@ function installTerraform {
     exit 1
   fi
 }
-
-# function debug {
-
-#   pwd
-#   ls -la
-#   printenv
-
-#   cat ${GITHUB_EVENT_PATH}
-# }
 
 parseInputs
 
