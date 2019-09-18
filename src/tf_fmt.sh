@@ -4,7 +4,7 @@ function terraformFmt {
 
   fmtOutput=$(terraform fmt -no-color -check -list -recursive ${tfWorkingDir})
   fmtExitCode=${?}
-  echo ${fmtOutput}
+  echo "fmtOutput: ${fmtOutput}"
 
   # All files are formatted correctly
   if [ "${fmtExitCode}" -eq 0 ]; then
@@ -18,9 +18,11 @@ function terraformFmt {
   else
     if [ "${fmtExitCode}" -eq 2 ]; then
       fmtComment=$(echo -e "\`\`\`\n${fmtOutput}\n\`\`\`\n")
+      echo "fmtComment2: ${fmtComment}"
     else
       fmtComment=""
       for fmtFile in ${fmtOutput}; do
+        echo "fmtFile: ${fmtFile}"
         fmtFileDiff=$(terraform fmt -no-color -write=false -diff "${tfWorkingDir}/${fmtFile}" | sed -n '/@@.*/,//{/@@.*/d;p}')
         fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${fmtFile}</code></summary>\n\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n\n</details>\n\n")
       done
