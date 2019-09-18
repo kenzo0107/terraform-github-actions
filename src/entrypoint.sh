@@ -23,7 +23,7 @@ function parseInputs {
  
   # Optional inputs
   if [ "${INPUT_TERRAFORM_WORKING_DIR}" == "" ] || [ "${INPUT_TERRAFORM_WORKING_DIR}" == "." ]; then
-    tfWorkingDir=""
+    tfWorkingDir="."
   else
     tfWorkingDir=${INPUT_TERRAFORM_WORKING_DIR}
   fi
