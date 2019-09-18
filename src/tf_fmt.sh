@@ -2,7 +2,7 @@
 
 function terraformFmt {
 
-  cd ${tfWorkingDir}
+  cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
   fmtOutput=$(terraform fmt -no-color -check -list -recursive 2>&1)
   fmtExitCode=${?}
 
@@ -21,7 +21,7 @@ function terraformFmt {
       fmtComment=""
       for fmtFile in ${fmtOutput}; do
         fmtFileDiff=$(terraform fmt -no-color -write=false -diff "${fmtFile}" | sed -n '/@@.*/,//{/@@.*/d;p}')
-        fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${fmtFile}</code></summary>\n\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n\n</details>\n\n")
+        fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${tfWorkingDir}/${fmtFile}</code></summary>\n\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n\n</details>\n\n")
       done
     fi
     fmtCommentWrapper=$(echo -e "#### \`terraform fmt\` Failed\n${fmtComment}\n\n*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`*\n")
