@@ -25,7 +25,7 @@ function parseInputs {
   if [ "${INPUT_TERRAFORM_WORKING_DIR}" == "" ] || [ "${INPUT_TERRAFORM_WORKING_DIR}" == "." ]; then
     tfWorkingDir=${GITHUB_WORKSPACE}
   else
-    tfWorkingDir${GITHUB_WORKSPACE}/${tfWorkingDir}
+    tfWorkingDir=${GITHUB_WORKSPACE}/${tfWorkingDir}
   fi
   
   if [ "${INPUT_POST_COMMENT}" == "true" ] || [ "${INPUT_POST_COMMENT}" == "1" ]; then
