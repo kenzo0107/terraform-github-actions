@@ -26,7 +26,7 @@ function terraformFmt {
       done
     fi
     echo "fmtComment: $fmtComment"
-    fmtCommentWrapper=$(echo -e "#### \`terraform fmt\` Failed\n${fmtComment}\n*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`*\n")
+    fmtCommentWrapper=$(echo -e "#### \`terraform fmt\` Failed\n${fmtComment}\n\n*Workflow: \`${GITHUB_WORKFLOW}\`, Action: \`${GITHUB_ACTION}\`*\n")
     echo "fmtCommentWrapper: $fmtCommentWrapper"
     fmtCommentPayload=$(echo '{}' | jq --arg body "${fmtCommentWrapper}" '.body = $body')
     fmtCommentsURL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
