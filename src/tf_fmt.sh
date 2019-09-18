@@ -30,6 +30,7 @@ function terraformFmt {
     echo "fmtCommentWrapper: $fmtCommentWrapper"
     fmtCommentPayload=$(echo '{}' | jq --arg body "${fmtCommentWrapper}" '.body = $body')
     fmtCommentsURL=$(cat ${GITHUB_EVENT_PATH} | jq -r .pull_request.comments_url)
+    echo "fmtCommentsURL: ${fmtCommentsURL}"
     curl -s -S --header "Authorization: token ${GITHUB_TOKEN}" --header "Content-Type: application/json" --data "${fmtCommentPayload}" "${fmtCommentsURL}" > /dev/null
     exit ${fmtExitCode}
   fi
