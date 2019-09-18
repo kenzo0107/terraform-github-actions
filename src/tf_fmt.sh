@@ -22,7 +22,7 @@ function terraformFmt {
       fmtComment=""
       for fmtFile in ${fmtOutput}; do
         fmtFileDiff=$(terraform fmt -no-color -write=false -diff "${fmtFile}" | sed -n '/@@.*/,//{/@@.*/d;p}')
-        if [ ${tfWorkingDir} == "" ]; then
+        if [ "${tfWorkingDir}" == "" ]; then
           fmtRelativePath=${fmtFile}
         else
           fmtRelativePath=${tfWorkingDir}/${fmtFile}
