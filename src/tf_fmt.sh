@@ -22,7 +22,7 @@ function terraformFmt {
     else
       fmtComment=""
       for fmtFile in ${fmtOutput}; do
-        echo "fmtFile: ${fmtFile}"
+        echo "currentPath: ${tfWorkindDir}/${fmtFile}"
         fmtFileDiff=$(terraform fmt -no-color -write=false -diff "${tfWorkingDir}/${fmtFile}" | sed -n '/@@.*/,//{/@@.*/d;p}')
         fmtComment=$(echo -e "${fmtComment}\n<details><summary><code>${fmtFile}</code></summary>\n\n\`\`\`diff\n${fmtFileDiff}\n\`\`\`\n\n</details>\n\n")
       done
