@@ -5,7 +5,6 @@ function terraformFmt {
   cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
   fmtOutput=$(terraform fmt -no-color -check -list -recursive 2>&1)
   fmtExitCode=${?}
-  echo "fmtOutput: ${fmtOutput}"
 
   # All files are formatted correctly
   if [ "${fmtExitCode}" -eq 0 ]; then

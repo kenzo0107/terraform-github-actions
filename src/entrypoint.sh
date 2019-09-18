@@ -39,12 +39,12 @@ function parseInputs {
 function installTerraform {
   url="https://releases.hashicorp.com/terraform/${tfVersion}/terraform_${tfVersion}_linux_amd64.zip"
   echo "Downloading Terraform v${tfVersion}"
-  curl -s -L -o /tmp/terraform_${tfVersion} ${url}
+  curl -s -S -L -o /tmp/terraform_${tfVersion} ${url}
   if [ "${?}" -ne 0 ]; then
     echo "Failed to download Terraform v${tfVersion}"
     exit 1
   fi
-  unzip -d /usr/local/bin /tmp/terraform_${tfVersion}
+  unzip -d /usr/local/bin /tmp/terraform_${tfVersion} > /dev/null 2>&1
   if [ "${?}" -ne 0 ]; then
     echo "Failed to unzip Terraform v${tfVersion}"
     exit 1
@@ -55,7 +55,6 @@ parseInputs
 
 case "${tfSubcommand}" in
   fmt)
-    printenv
     installTerraform
     terraformFmt
     ;;
