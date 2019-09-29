@@ -56,6 +56,9 @@ COMMENT=""
 if [ $SUCCESS -ne 0 ]; then
     OUTPUT=$(wrap "$OUTPUT")
     COMMENT="#### \`terraform apply\` Failed
+
+* workspace ( \`${TF_ACTION_WORKING_DIR:-.}\` )
+
 $OUTPUT
 
 *Workflow: \`$GITHUB_WORKFLOW\`, Action: \`$GITHUB_ACTION\`*"
@@ -63,6 +66,9 @@ else
     # Call wrap to optionally wrap our output in a collapsible markdown section.
     OUTPUT=$(wrap "$OUTPUT")
     COMMENT="#### \`terraform apply\` Success
+
+* workspace ( \`${TF_ACTION_WORKING_DIR:-.}\` )
+
 $OUTPUT
 
 *Workflow: \`$GITHUB_WORKFLOW\`, Action: \`$GITHUB_ACTION\`*"

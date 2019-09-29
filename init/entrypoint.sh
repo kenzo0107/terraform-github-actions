@@ -26,6 +26,7 @@ if [ "$TF_ACTION_COMMENT" = "1" ] || [ "$TF_ACTION_COMMENT" = "false" ]; then
 fi
 
 COMMENT="#### \`terraform init\` Failed
+* workspace ( \`${TF_ACTION_WORKING_DIR:-.}\` )
 \`\`\`
 $OUTPUT
 \`\`\`
@@ -35,4 +36,3 @@ COMMENTS_URL=$(cat $GITHUB_EVENT_PATH | jq -r .pull_request.comments_url)
 curl -s -S -H "Authorization: token $GITHUB_TOKEN" --header "Content-Type: application/json" --data "$PAYLOAD" "$COMMENTS_URL" > /dev/null
 
 exit $SUCCESS
-

@@ -26,6 +26,7 @@ if [ "$TF_ACTION_COMMENT" = "1" ] || [ "$TF_ACTION_COMMENT" = "false" ]; then
 fi
 
 COMMENT="#### \`tflint\` Failed
+* workspace ( \`${TF_ACTION_WORKING_DIR:-.}\` )
 \`\`\`
 $OUTPUT
 \`\`\`
